@@ -1,26 +1,22 @@
 ﻿using Azure.Messaging.ServiceBus;
 
-// the client that owns the connection and can be used to create senders and receivers
+Console.WriteLine("Insert Service bus connection string:");
+var connectionString = Console.ReadLine();
+
+Console.WriteLine("Insert queue name");
+var queue = Console.ReadLine();
+
 ServiceBusClient client;
-
-// the processor that reads and processes messages from the queue
 ServiceBusProcessor processor;
-
-// The Service Bus client types are safe to cache and use as a singleton for the lifetime
-// of the application, which is best practice when messages are being published or read
-// regularly.
-//
-// Set the transport type to AmqpWebSockets so that the ServiceBusClient uses port 443. 
-// If you use the default AmqpTcp, make sure that ports 5671 and 5672 are open.
 
 var clientOptions = new ServiceBusClientOptions()
 {
     TransportType = ServiceBusTransportType.AmqpWebSockets
 };
-client = new ServiceBusClient("", clientOptions);
+client = new ServiceBusClient(connectionString, clientOptions);
 
 // create a processor that we can use to process the messages
-processor = client.CreateProcessor("", new ServiceBusProcessorOptions());
+processor = client.CreateProcessor(queue, new ServiceBusProcessorOptions());
 
 try
 {
@@ -43,8 +39,6 @@ try
 }
 finally
 {
-    // Calling DisposeAsync on client types is required to ensure that network
-    // resources and other unmanaged objects are properly cleaned up.
     await processor.DisposeAsync();
     await client.DisposeAsync();
 }

@@ -1,46 +1,42 @@
 ﻿using Azure.Messaging.ServiceBus;
 
-// the client that owns the connection and can be used to create senders and receivers
+Console.WriteLine("Insert Service bus connection string:");
+var connectionString = Console.ReadLine();
+
+Console.WriteLine("Insert queue name:");
+var queue = Console.ReadLine();
+
+Console.WriteLine("Insert message");
+var message = Console.ReadLine();
+
+Console.WriteLine("Insert number of messages you want to send. Default 1:");
+var numberOfMessages = int.Parse(Console.ReadLine() ?? "1");
+
 ServiceBusClient client;
-
-// the sender used to publish messages to the queue
 ServiceBusSender sender;
-
-// number of messages to be sent to the queue
-const int numOfMessages = 3;
-
-// The Service Bus client types are safe to cache and use as a singleton for the lifetime
-// of the application, which is best practice when messages are being published or read
-// regularly.
-//
-// set the transport type to AmqpWebSockets so that the ServiceBusClient uses the port 443. 
-// If you use the default AmqpTcp, you will need to make sure that the ports 5671 and 5672 are open
 
 var clientOptions = new ServiceBusClientOptions()
 {
     TransportType = ServiceBusTransportType.AmqpWebSockets
 };
-client = new ServiceBusClient("", clientOptions);
-sender = client.CreateSender("");
+client = new ServiceBusClient(connectionString, clientOptions);
+sender = client.CreateSender(queue);
 
 // create a batch 
-using ServiceBusMessageBatch messageBatch = await sender.CreateMessageBatchAsync();
+using var messageBatch = await sender.CreateMessageBatchAsync();
 
-for (int i = 1; i <= numOfMessages; i++)
+for (var i = 1; i <= numberOfMessages; i++)
 {
     // try adding a message to the batch
-    if (!messageBatch.TryAddMessage(new ServiceBusMessage($"Message {i}")))
-    {
-        // if it is too large for the batch
-        throw new Exception($"The message {i} is too large to fit in the batch.");
-    }
+    if (!messageBatch.TryAddMessage(new ServiceBusMessage(message)))
+        throw new Exception($"The message {i} - {message} is too large to fit in the batch.");
 }
 
 try
 {
     // Use the producer client to send the batch of messages to the Service Bus queue
     await sender.SendMessagesAsync(messageBatch);
-    Console.WriteLine($"A batch of {numOfMessages} messages has been published to the queue.");
+    Console.WriteLine($"A batch of {numberOfMessages} messages has been published to the queue.");
 }
 finally
 {
