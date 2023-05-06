@@ -13,16 +13,14 @@ ServiceBusProcessor processor;
 // Set the transport type to AmqpWebSockets so that the ServiceBusClient uses port 443. 
 // If you use the default AmqpTcp, make sure that ports 5671 and 5672 are open.
 
-// TODO: Replace the <NAMESPACE-CONNECTION-STRING> and <QUEUE-NAME> placeholders
 var clientOptions = new ServiceBusClientOptions()
 {
     TransportType = ServiceBusTransportType.AmqpWebSockets
 };
-client = new ServiceBusClient("<NAMESPACE-CONNECTION-STRING>", clientOptions);
+client = new ServiceBusClient("", clientOptions);
 
 // create a processor that we can use to process the messages
-// TODO: Replace the <QUEUE-NAME> placeholder
-processor = client.CreateProcessor("<QUEUE-NAME>", new ServiceBusProcessorOptions());
+processor = client.CreateProcessor("", new ServiceBusProcessorOptions());
 
 try
 {

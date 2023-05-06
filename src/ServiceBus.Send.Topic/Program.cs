@@ -12,7 +12,6 @@ const int numOfMessages = 1;
 // The Service Bus client types are safe to cache and use as a singleton for the lifetime
 // of the application, which is best practice when messages are being published or read
 // regularly.
-//TODO: Replace the "<NAMESPACE-CONNECTION-STRING>" and "<TOPIC-NAME>" placeholders.
 client = new ServiceBusClient("");
 sender = client.CreateSender("");
 

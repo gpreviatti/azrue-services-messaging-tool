@@ -9,7 +9,7 @@ ServiceBusProcessor processor;
 // handle received messages
 async Task MessageHandler(ProcessMessageEventArgs args)
 {
-    string body = args.Message.Body.ToString();
+    var body = args.Message.Body.ToString();
     Console.WriteLine($"Received: {body} from subscription.");
 
     // complete the message. messages is deleted from the subscription. 
