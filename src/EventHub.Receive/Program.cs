@@ -1,44 +1,39 @@
-﻿using Azure.Messaging.EventHubs;
-using Azure.Messaging.EventHubs.Consumer;
-using Azure.Messaging.EventHubs.Processor;
-using Azure.Storage.Blobs;
-using System.Text;
+﻿using Azure.Messaging.EventHubs.Consumer;
+using System.Diagnostics;
 
-// Create a blob container client that the event processor will use 
-var storageClient = new BlobContainerClient("", "");
+var connectionString = "";
+var eventHubName = "";
 
-// Create an event processor client to process events in the event hub
-var processor = new EventProcessorClient(
-    storageClient,
-    EventHubConsumerClient.DefaultConsumerGroupName,
-    "",
-    ""
-);
+var consumerGroup = EventHubConsumerClient.DefaultConsumerGroupName;
 
-// Register handlers for processing events and handling errors
-processor.ProcessEventAsync += ProcessEventHandler;
-processor.ProcessErrorAsync += ProcessErrorHandler;
+var consumer = new EventHubConsumerClient(consumerGroup, connectionString, eventHubName);
 
-// Start the processing
-await processor.StartProcessingAsync();
-
-// Wait for 30 seconds for the events to be processed
-await Task.Delay(TimeSpan.FromSeconds(30));
-
-// Stop the processing
-await processor.StopProcessingAsync();
-
-Task ProcessEventHandler(ProcessEventArgs eventArgs)
+try
 {
-    // Write the body of the event to the console window
-    Console.WriteLine("\tReceived event: {0}", Encoding.UTF8.GetString(eventArgs.Data.Body.ToArray()));
-    return Task.CompletedTask;
+    using var cancellationSource = new CancellationTokenSource();
+    cancellationSource.CancelAfter(TimeSpan.FromSeconds(120));
+
+    var eventsRead = 0;
+    var maximumEvents = 3;
+
+    await foreach (PartitionEvent partitionEvent in consumer.ReadEventsAsync(cancellationSource.Token))
+    {
+        var readFromPartition = partitionEvent.Partition.PartitionId;
+        var eventBodyBytes = partitionEvent.Data.EventBody.ToArray();
+
+        Debug.WriteLine($"Read event of length {eventBodyBytes.Length} from {readFromPartition}");
+        eventsRead++;
+
+        if (eventsRead >= maximumEvents)
+            break;
+    }
 }
-
-Task ProcessErrorHandler(ProcessErrorEventArgs eventArgs)
+catch (TaskCanceledException)
 {
-    // Write details about the error to the console window
-    Console.WriteLine($"\tPartition '{eventArgs.PartitionId}': an unhandled exception was encountered. This was not expected to happen.");
-    Console.WriteLine(eventArgs.Exception.Message);
-    return Task.CompletedTask;
+    // This is expected if the cancellation token is
+    // signaled.
+}
+finally
+{
+    await consumer.CloseAsync();
 }
