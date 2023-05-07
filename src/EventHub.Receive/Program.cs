@@ -1,39 +1,60 @@
 ﻿using Azure.Messaging.EventHubs.Consumer;
 using System.Diagnostics;
 
-Console.WriteLine("Insert Event hub namespace connection string:");
-var connectionString = Console.ReadLine();
+namespace EventHub.Receive;
 
-Console.WriteLine("Insert Event hub name:");
-var eventHubName = Console.ReadLine();
-
-Console.WriteLine("Insert consumer group name. Default value: $Default:");
-var consumerGroup = Console.ReadLine() ?? "$Default";
-
-Console.WriteLine("Insert timeout time:");
-var cancelAfter = Console.ReadLine() ?? "60";
-
-var consumer = new EventHubConsumerClient(consumerGroup, connectionString, eventHubName);
-
-try
+public class Program
 {
-    using var cancellationSource = new CancellationTokenSource();
-    cancellationSource.CancelAfter(TimeSpan.FromSeconds(int.Parse(cancelAfter!)));
-
-    await foreach (PartitionEvent partitionEvent in consumer.ReadEventsAsync(cancellationSource.Token))
+    private static async Task Main(string[] args)
     {
-        var readFromPartition = partitionEvent.Partition.PartitionId;
-        var eventBodyBytes = partitionEvent.Data.EventBody.ToArray();
+        string connectionString;
+        string eventHubName;
+        string consumerGroup;
+        int cancelAfter;
 
-        Debug.WriteLine($"Read event of length {eventBodyBytes.Length} from {readFromPartition}");
+        if (args.Length == 0)
+        {
+            Console.WriteLine("Insert Event hub namespace connection string:");
+            connectionString = Console.ReadLine()!;
+
+            Console.WriteLine("Insert Event hub name:");
+            eventHubName = Console.ReadLine()!;
+
+            Console.WriteLine("Insert consumer group name. Default value: $Default:");
+            consumerGroup = Console.ReadLine() ?? "$Default";
+
+            Console.WriteLine("Insert timeout time:");
+            cancelAfter = int.Parse(Console.ReadLine() ?? "60");
+        } else
+        {
+            connectionString = args[0];
+            eventHubName = args[1];
+            consumerGroup = args[2];
+            cancelAfter = int.Parse(args[3]);
+        }
+
+        var consumer = new EventHubConsumerClient(consumerGroup, connectionString, eventHubName);
+
+        try
+        {
+            using var cancellationSource = new CancellationTokenSource();
+            cancellationSource.CancelAfter(TimeSpan.FromSeconds(cancelAfter));
+
+            await foreach (var partitionEvent in consumer.ReadEventsAsync(cancellationSource.Token))
+            {
+                var readFromPartition = partitionEvent.Partition.PartitionId;
+                var eventBodyBytes = partitionEvent.Data.EventBody.ToArray();
+
+                Debug.WriteLine($"Read event of length {eventBodyBytes.Length} from {readFromPartition}");
+            }
+        }
+        catch (TaskCanceledException taskException)
+        {
+            Console.WriteLine(taskException.Message);
+        }
+        finally
+        {
+            await consumer.CloseAsync();
+        }
     }
-}
-catch (TaskCanceledException)
-{
-    // This is expected if the cancellation token is
-    // signaled.
-}
-finally
-{
-    await consumer.CloseAsync();
 }
