@@ -7,7 +7,7 @@ public class Program
     private static async Task Main(string[] args)
     {
         string connectionString;
-        string topic;
+        string queue;
         string message;
         int numberOfMessages;
 
@@ -16,8 +16,8 @@ public class Program
             Console.WriteLine("Insert Event hub namespace connection string:");
             connectionString = Console.ReadLine()!;
 
-            Console.WriteLine("Insert topic name:");
-            topic = Console.ReadLine()!;
+            Console.WriteLine("Insert queue name:");
+            queue = Console.ReadLine()!;
 
             Console.WriteLine("Insert message:");
             message = Console.ReadLine()!;
@@ -28,7 +28,7 @@ public class Program
         else
         {
             connectionString = args[0];
-            topic = args[1];
+            queue = args[1];
             message = args[2];
             numberOfMessages = int.Parse(args[3]);
         }
@@ -40,7 +40,7 @@ public class Program
         // of the application, which is best practice when messages are being published or read
         // regularly.
         client = new ServiceBusClient(connectionString);
-        sender = client.CreateSender(topic);
+        sender = client.CreateSender(queue);
 
         // create a batch 
         using var messageBatch = await sender.CreateMessageBatchAsync();
@@ -52,9 +52,9 @@ public class Program
 
         try
         {
-            // Use the producer client to send the batch of messages to the Service Bus topic
+            // Use the producer client to send the batch of messages to the Service Bus queue
             await sender.SendMessagesAsync(messageBatch);
-            Console.WriteLine($"A batch of {numberOfMessages} messages has been published to the topic.");
+            Console.WriteLine($"A batch of {numberOfMessages} messages has been published to the queue.");
         }
         finally
         {

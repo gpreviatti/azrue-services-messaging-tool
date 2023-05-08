@@ -3,17 +3,17 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.33530.505
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServiceBus.Queue.Send", "src\ServiceBus.Send.Topic\ServiceBus.Queue.Send.csproj", "{454BE02A-C0D7-4F52-81F4-9012FD918ED1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServiceBus.Queue.Send", "src\ServiceBus.Queue.Send\ServiceBus.Queue.Send.csproj", "{454BE02A-C0D7-4F52-81F4-9012FD918ED1}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServiceBus.Topic.Receive", "src\ServiceBus.Receive.Topic\ServiceBus.Topic.Receive.csproj", "{03453AC7-42BC-4E48-ABDC-3675E82D0215}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServiceBus.Topic.Receive", "src\ServiceBus.Topic.Receive\ServiceBus.Topic.Receive.csproj", "{03453AC7-42BC-4E48-ABDC-3675E82D0215}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ServiceBus", "ServiceBus", "{4AF76D54-C2E9-42A8-B412-287687B0BD51}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "EventHub", "EventHub", "{5506EB14-3F51-4F22-ADD0-01693BE79C8A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServiceBus.Topic.Send", "src\ServiceBus.Send.Queue\ServiceBus.Topic.Send.csproj", "{0EEC7C8B-AD86-4DA3-889B-6EDF1FADD961}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServiceBus.Topic.Send", "src\ServiceBus.Topic.Send\ServiceBus.Topic.Send.csproj", "{0EEC7C8B-AD86-4DA3-889B-6EDF1FADD961}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServiceBus.Queue.Receive", "src\ServiceBus.Receive.Queue\ServiceBus.Queue.Receive.csproj", "{FE070D1E-BBE7-4939-BFBE-9DBD54CB4D9B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServiceBus.Queue.Receive", "src\ServiceBus.Queue.Receive\ServiceBus.Queue.Receive.csproj", "{FE070D1E-BBE7-4939-BFBE-9DBD54CB4D9B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventHub.Send", "src\EventHub.Send\EventHub.Send.csproj", "{D9349998-98B6-4390-B631-28D82BA297E6}"
 EndProject

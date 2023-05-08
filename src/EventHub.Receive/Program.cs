@@ -8,7 +8,6 @@ public class Program
     private static async Task Main(string[] args)
     {
         string connectionString;
-        string eventHubName;
         string consumerGroup;
         int cancelAfter;
 
@@ -16,9 +15,6 @@ public class Program
         {
             Console.WriteLine("Insert Event hub namespace connection string:");
             connectionString = Console.ReadLine()!;
-
-            Console.WriteLine("Insert Event hub name:");
-            eventHubName = Console.ReadLine()!;
 
             Console.WriteLine("Insert consumer group name. Default value: $Default:");
             consumerGroup = Console.ReadLine() ?? "$Default";
@@ -28,12 +24,11 @@ public class Program
         } else
         {
             connectionString = args[0];
-            eventHubName = args[1];
-            consumerGroup = args[2];
-            cancelAfter = int.Parse(args[3]);
+            consumerGroup = args[1];
+            cancelAfter = int.Parse(args[2]);
         }
 
-        var consumer = new EventHubConsumerClient(consumerGroup, connectionString, eventHubName);
+        var consumer = new EventHubConsumerClient(consumerGroup, connectionString);
 
         try
         {
